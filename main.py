@@ -42,11 +42,14 @@ def filter_out_code(input: str) -> str:
 
 def suggest_improvements(text: str) -> list[str]:
     suggestions = [
-        '1. Try to use shorter sentences.',
-        '2. Replace complex words with simpler alternatives.',
-        '3. Use active voice instead of passive voice.',
-        '4. Break down complex ideas into smaller, easier-to-understand concepts.',
-        '5. Use examples and analogies to explain complex topics.'
+        '[100.00–90.00] - 5th grade level - Very easy to read. Easily understood by an average 11-year-old student.',
+        '[ 90.0 - 80.0] - 6th grade level - Very easy to read. Easily understood by an average 11-year-old student',
+        '[ 80.0 - 70.0] - 7th grade level - Fairly easy to read.',
+        '[ 70.0 - 60.0] - 8th & 9th grade - Plain English. Easily understood by 13- to 15-year-old students.',
+        '[ 60.0 – 50.0] - 10th - 12th gr  - Fairly difficult to read.',
+        '[ 50.0 – 30.0] -        College  - Difficult to read.',
+        '[ 30.0 – 10.0] -    College grad - Very difficult to read. Best understood by university graduates.',
+        '[ 10.0 – 0.0] -    Professional  - Extremely difficult to read. Best understood by university graduates.'
     ]
 
     return suggestions
@@ -78,7 +81,7 @@ def main():
         suggestions = suggest_improvements(filtered_text)
 
         print(f'Flesch-Kincaid readability score: {score:.2f}')
-        print('Suggestions for improvement:')
+        print('The rating scale for reference:')
         print('\n'.join(suggestions))
 
         user_input = input('Do you want to analyze new text? (yes/no): ').strip().lower()
