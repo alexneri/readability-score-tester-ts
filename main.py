@@ -1,5 +1,36 @@
-import sys
+# Flesch-kincaid text analyzer
+# For use with technical documentation with code.
+# This app received multi-line input, strips away the code, and then analyzes the text
+# using the Flesch-Kincaid readability test.
+#
+# Created by Alexander NV Neri on 04 May 2023
+# https://github.com/alexneri/readability-score-tester-ts
+
+
+import os
 import re
+
+def clear_screen():
+    os.environ['TERM'] = 'xterm'
+    os.system('cls' if os.name == 'nt' else 'clear')
+
+def get_rating_comment(score):
+    if score >= 100:
+        return '5th grade level - Very easy to read. Easily understood by an average 11-year-old student.'
+    elif score >= 90:
+        return '6th grade level - Very easy to read. Easily understood by an average 11-year-old student'
+    elif score >= 80:
+        return '7th grade level - Fairly easy to read.'
+    elif score >= 70:
+        return '8th & 9th grade - Plain English. Easily understood by 13- to 15-year-old students.'
+    elif score >= 60:
+        return '10th - 12th grade - Fairly difficult to read.'
+    elif score >= 50:
+        return 'College - Difficult to read.'
+    elif score >= 30:
+        return 'College grad - Very difficult to read. Best understood by university graduates.'
+    else:
+        return 'Professional - Extremely difficult to read. Best understood by university graduates.'
 
 class FleschKincaid:
     sentence_endings = '.!?'
@@ -40,52 +71,34 @@ def filter_out_code(input: str) -> str:
     filtered_lines = [line for line in lines if not line.startswith('```')]
     return '\n'.join(filtered_lines)
 
-def suggest_improvements(text: str) -> list[str]:
-    suggestions = [
-        '[100.00–90.00] - 5th grade level - Very easy to read. Easily understood by an average 11-year-old student.',
-        '[ 90.0 - 80.0] - 6th grade level - Very easy to read. Easily understood by an average 11-year-old student',
-        '[ 80.0 - 70.0] - 7th grade level - Fairly easy to read.',
-        '[ 70.0 - 60.0] - 8th & 9th grade - Plain English. Easily understood by 13- to 15-year-old students.',
-        '[ 60.0 – 50.0] - 10th - 12th gr  - Fairly difficult to read.',
-        '[ 50.0 – 30.0] -        College  - Difficult to read.',
-        '[ 30.0 – 10.0] -    College grad - Very difficult to read. Best understood by university graduates.',
-        '[ 10.0 – 0.0] -    Professional  - Extremely difficult to read. Best understood by university graduates.'
-    ]
-
-    return suggestions
-
-def get_input() -> str:
-    print('Enter multi-line text (end with two consecutive blank lines):')
-    input_lines = []
-
-    blank_line_count = 0
-    while True:
-        line = sys.stdin.readline().strip()
-        if not line:
-            blank_line_count += 1
-        else:
-            blank_line_count = 0
-
-        if blank_line_count == 2:
-            break
-
-        input_lines.append(line)
-
-    return '\n'.join(input_lines)
-
 def main():
     while True:
-        input_text = get_input()
-        filtered_text = filter_out_code(input_text)
-        score = FleschKincaid.calculate(filtered_text)
-        suggestions = suggest_improvements(filtered_text)
+        input_text = input("Enter multi-line text (end with two consecutive blank lines):\n")
+        input_lines = []
+        blank_line_count = 0
 
+        while True:
+            if not input_text:
+                blank_line_count += 1
+            else:
+                blank_line_count = 0
+
+            if blank_line_count == 2:
+                break
+
+            input_lines.append(input_text)
+            input_text = input()
+
+        text = '\n'.join(input_lines)
+        score = FleschKincaid.calculate(text)
         print(f'Flesch-Kincaid readability score: {score:.2f}')
-        print('The rating scale for reference:')
-        print('\n'.join(suggestions))
+        print('Rating comment:')
+        print(get_rating_comment(score))
 
-        user_input = input('Do you want to analyze new text? (yes/no): ').strip().lower()
-        if user_input != 'yes':
+        user_input = input('Do you want to analyze new text? (yes/no): ').lower()
+        if user_input == 'yes':
+            clear_screen()
+        else:
             break
 
 if __name__ == '__main__':
